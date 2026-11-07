@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="KPI Card">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>KPI Performance Card</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: form on top, black menswear-style card below; sharp edges, black / white / camel */
+:root{
+  --bg:#f4f2ee; --surface:#ffffff; --ink:#0a0a0a; --muted:#77736c; --line:#d9d5ce;
+  --black:#000000; --white:#ffffff; --camel:#c19a6b; --camel-soft:#d9bf9a;
+  --good:#9cc4a4; --warn:#e3967d;
+  --font:"Jost","Futura","Century Gothic","Avenir Next",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111111; --surface:#1a1a1a; --ink:#f2f0ec; --muted:#9a958d; --line:#2e2c29; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111111; --surface:#1a1a1a; --ink:#f2f0ec; --muted:#9a958d; --line:#2e2c29; color-scheme:dark}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5}
+[hidden]{display:none!important} img{max-width:100%}
+.wrap{max-width:520px;margin:0 auto;padding-block:24px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:.68rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-weight:500;font-size:1.6rem;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 0;text-wrap:balance}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+.full{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:6px;font-size:.66rem;font-weight:500;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);min-width:0}
+input{font:400 1rem var(--font);color:var(--ink);background:var(--surface);border:0;border-bottom:1px solid var(--ink);border-radius:0;padding:10px 2px;width:100%;box-sizing:border-box}
+input:focus{outline:none;border-bottom:2px solid var(--camel);padding-bottom:9px}
+
+/* The card: always black, like the label */
+.card{background:var(--black);color:var(--white);padding:26px 22px 22px;display:flex;flex-direction:column;gap:22px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.top span{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.who{font-size:1.55rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;line-height:1.15;overflow-wrap:anywhere;margin-top:-6px}
+.rule{height:1px;background:rgba(255,255,255,.22)}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.hero .big{font-size:3.6rem;font-weight:300;line-height:.9;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.hero .lbl{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:8px}
+.status{font-size:.62rem;font-weight:500;letter-spacing:.24em;text-transform:uppercase;display:flex;align-items:center;gap:8px;white-space:nowrap;padding-bottom:4px}
+.status i{width:7px;height:7px;display:inline-block}
+.status.good{color:var(--good)} .status.good i{background:var(--good)}
+.status.warn{color:var(--warn)} .status.warn i{background:var(--warn)}
+.bars{display:flex;flex-direction:column;gap:12px}
+.brow{display:flex;justify-content:space-between;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.brow b{font-weight:400;letter-spacing:.06em;color:var(--white);font-variant-numeric:tabular-nums}
+.track{height:3px;background:rgba(255,255,255,.16);margin-top:7px}
+.fill{height:100%;transition:width .4s}
+.fill.ach{background:var(--camel)} .fill.time{background:rgba(255,255,255,.7)}
+.grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.22)}
+.cell{padding:14px 0 14px;border-bottom:1px solid rgba(255,255,255,.22);min-width:0}
+.cell:nth-child(odd){padding-right:12px;border-right:1px solid rgba(255,255,255,.22)}
+.cell:nth-child(even){padding-left:14px}
+.k{font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.v{font-size:1.25rem;font-weight:400;letter-spacing:.02em;margin-top:4px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.focus{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border:1px solid var(--camel);padding:14px 16px}
+.focus .k{color:var(--camel-soft)}
+.focus .v{font-size:1.6rem;color:var(--camel);margin:0}
+.foot{text-align:center;font-size:.56rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+
+.note{font-size:.82rem;color:var(--muted);margin:0;text-align:center}
+button{font:500 .78rem var(--font);letter-spacing:.24em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:0;border-radius:0;padding:16px;cursor:pointer}
+button:active{opacity:.85}
+button:focus-visible{outline:2px solid var(--camel);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Monthly performance</p>
+    <h1>KPI Card</h1>
+  </header>
+
+  <form id="f" onsubmit="event.preventDefault()">
+    <label class="full">Name<input id="name" type="text" value="Sample Staff" autocomplete="off"></label>
+    <label>Monthly target (BHD)<input id="target" type="number" inputmode="decimal" min="0" value="30000"></label>
+    <label>Date<input id="date" type="date"></label>
+    <label>MTD achievement (BHD)<input id="mtd" type="number" inputmode="decimal" min="0" value="12500"></label>
+    <label>MTD UPT<input id="upt" type="number" inputmode="decimal" min="0" step="0.01" value="1.65"></label>
+  </form>
+
+  <section class="card" id="card" aria-live="polite">
+    <div class="top"><span>KPI Performance</span><span id="cWhen"></span></div>
+    <div class="who" id="cWho"></div>
+    <div class="rule"></div>
+    <div class="hero">
+      <div><div class="big" id="cAchBig"></div><div class="lbl">Target achieved</div></div>
+      <div class="status" id="cStatus"><i></i><span id="cStatusTxt"></span></div>
+    </div>
+    <div class="bars">
+      <div><div class="brow"><span>Achievement</span><b id="cAch"></b></div><div class="track"><div class="fill ach" id="bAch"></div></div></div>
+      <div><div class="brow"><span>Time passed</span><b id="cTime"></b></div><div class="track"><div class="fill time" id="bTime"></div></div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Monthly target</div><div class="v" id="cTarget"></div></div>
+      <div class="cell"><div class="k">MTD achievement</div><div class="v" id="cMtd"></div></div>
+      <div class="cell"><div class="k">Remaining target</div><div class="v" id="cRem"></div></div>
+      <div class="cell"><div class="k">Remaining days</div><div class="v" id="cDays"></div></div>
+    </div>
+    <div class="focus">
+      <div class="k">Daily target</div>
+      <div class="v" id="cDaily"></div>
+    </div>
+    <div class="focus" style="border-color:rgba(255,255,255,.3)">
+      <div class="k" style="color:rgba(255,255,255,.6)">MTD UPT</div>
+      <div class="v" id="cUpt" style="color:#fff"></div>
+    </div>
+  </section>
+
+  <button type="button" id="save">Save card as image</button>
+  <p class="note" id="msg">Saves the card as a picture you can send on WhatsApp.</p>
+  <img id="preview" alt="KPI card image" hidden style="width:100%">
+  <canvas id="cv" hidden></canvas>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const num=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
+const bhd=n=>"BHD "+n.toLocaleString("en-US",{maximumFractionDigits:0});
+const pct=n=>(n*100).toFixed(1)+"%";
+
+// Pure calculation — days remaining includes the entered day
+function calc(target,mtd,dateStr){
+  const [y,m,d]=dateStr.split("-").map(Number);
+  const dim=new Date(y,m,0).getDate();
+  const remDays=dim-d+1;
+  const remTarget=Math.max(target-mtd,0);
+  return {dim,day:d,remDays,remTarget,
+    daily:remDays>0?remTarget/remDays:0,
+    ach:target>0?mtd/target:0,
+    time:(d-1)/dim};
+}
+
+const t=new Date();
+$("date").value=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
+let S=null;
+
+function render(){
+  const target=num($("target").value),mtd=num($("mtd").value),upt=num($("upt").value);
+  const ds=$("date").value||$("date").defaultValue;
+  if(!ds) return;
+  const r=calc(target,mtd,ds);
+  const dateLbl=new Date(ds+"T00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  const name=$("name").value.trim()||"Staff";
+  const ok=r.ach>=r.time;
+  $("cWho").textContent=name; $("cWhen").textContent=dateLbl;
+  $("cAchBig").textContent=pct(r.ach);
+  $("cStatus").className="status "+(ok?"good":"warn");
+  $("cStatusTxt").textContent=ok?"On track":"Behind pace";
+  $("cAch").textContent=pct(r.ach); $("cTime").textContent=pct(r.time);
+  $("bAch").style.width=Math.min(r.ach*100,100)+"%"; $("bTime").style.width=r.time*100+"%";
+  $("cTarget").textContent=bhd(target); $("cMtd").textContent=bhd(mtd);
+  $("cRem").textContent=r.remTarget===0?"Achieved":bhd(r.remTarget);
+  $("cDays").textContent=r.remDays+" of "+r.dim;
+  $("cDaily").textContent=bhd(r.daily);
+  $("cUpt").textContent=upt.toFixed(2);
+  S={name,dateLbl,ds,target,mtd,upt,ok,...r};
+  $("preview").hidden=true;
+}
+$("f").addEventListener("input",render);
+
+// Draw the card on a canvas for the saved image
+function spaced(c,txt,x,y,sp,align){
+  // draw text with letter-spacing; align "left" | "right" | "center"
+  const chars=[...txt];let w=0;chars.forEach((ch,i)=>{w+=c.measureText(ch).width+(i<chars.length-1?sp:0)});
+  let cx=align==="right"?x-w:align==="center"?x-w/2:x;
+  chars.forEach(ch=>{c.fillText(ch,cx,y);cx+=c.measureText(ch).width+sp});
+  return w;
+}
+function fit(c,txt,weight,size,sp,maxW){
+  let s=size;
+  for(;s>20;s--){c.font=`${weight} ${s}px ${F}`;const w=[...txt].reduce((a,ch)=>a+c.measureText(ch).width+sp*s/size,0);if(w<=maxW)break}
+  return {s,sp:sp*s/size};
+}
+const F='"Jost","Futura","Century Gothic",sans-serif';
+function drawCard(){
+  const W=1080,H=1500,P=80,cv=$("cv"),c=cv.getContext("2d");
+  cv.width=W;cv.height=H;
+  const white="#ffffff",dim="rgba(255,255,255,0.6)",hair="rgba(255,255,255,0.22)",camel="#c19a6b",camelSoft="#d9bf9a";
+  const stat=S.ok?"#9cc4a4":"#e3967d";
+  c.fillStyle="#000";c.fillRect(0,0,W,H);
+  c.textBaseline="alphabetic";
+  const IW=W-2*P;
+  // top row
+  c.fillStyle=dim;c.font=`400 24px ${F}`;
+  spaced(c,"KPI PERFORMANCE",P,P+30,8);
+  spaced(c,S.dateLbl.toUpperCase(),W-P,P+30,6,"right");
+  // name
+  c.fillStyle=white;const nm=S.name.toUpperCase();const f=fit(c,nm,500,72,14,IW);
+  c.font=`500 ${f.s}px ${F}`;spaced(c,nm,P,P+130,f.sp);
+  c.fillStyle=hair;c.fillRect(P,P+180,IW,2);
+  // hero
+  c.fillStyle=white;c.font=`300 170px ${F}`;c.fillText(pct(S.ach),P-6,P+370);
+  c.fillStyle=dim;c.font=`400 24px ${F}`;spaced(c,"TARGET ACHIEVED",P,P+420,8);
+  c.font=`500 24px ${F}`;c.fillStyle=stat;
+  const stTxt=S.ok?"ON TRACK":"BEHIND PACE";const sw=spaced(c,stTxt,W-P,P+370,7,"right");
+  c.fillRect(W-P-sw-30,P+352,16,16);
+  // bars
+  [["ACHIEVEMENT",S.ach,camel],["TIME PASSED",S.time,"rgba(255,255,255,0.7)"]].forEach(([k,v,col],i)=>{
+    const y=P+500+i*90;
+    c.fillStyle="rgba(255,255,255,0.7)";c.font=`400 24px ${F}`;spaced(c,k,P,y,7);
+    c.fillStyle=white;c.font=`400 30px ${F}`;const tx=pct(v);c.fillText(tx,W-P-c.measureText(tx).width,y);
+    c.fillStyle="rgba(255,255,255,0.16)";c.fillRect(P,y+20,IW,6);
+    c.fillStyle=col;c.fillRect(P,y+20,Math.min(Math.max(v,0),1)*IW,6);
+  });
+  // grid 2x2
+  const gy=P+680,rowH=150,half=IW/2;
+  c.fillStyle=hair;c.fillRect(P,gy,IW,2);c.fillRect(P,gy+rowH,IW,2);c.fillRect(P,gy+2*rowH,IW,2);
+  c.fillRect(P+half,gy,2,2*rowH);
+  const cells=[["MONTHLY TARGET",bhd(S.target)],["MTD ACHIEVEMENT",bhd(S.mtd)],
+    ["REMAINING TARGET",S.remTarget===0?"Achieved":bhd(S.remTarget)],["REMAINING DAYS",S.remDays+" of "+S.dim]];
+  cells.forEach(([k,v],i)=>{
+    const x=P+(i%2)*half+(i%2?32:0),y=gy+Math.floor(i/2)*rowH;
+    c.fillStyle=dim;c.font=`400 22px ${F}`;spaced(c,k,x,y+50,6);
+    c.fillStyle=white;const ff=fit(c,v,400,46,1,half-48);c.font=`400 ${ff.s}px ${F}`;c.fillText(v,x,y+112);
+  });
+  // focus boxes
+  const box=(y,label,val,border,lc,vc)=>{
+    c.strokeStyle=border;c.lineWidth=2;c.strokeRect(P+1,y,IW-2,120);
+    c.fillStyle=lc;c.font=`400 24px ${F}`;spaced(c,label,P+36,y+72,7);
+    c.fillStyle=vc;const ff=fit(c,val,400,56,1,IW/2);c.font=`400 ${ff.s}px ${F}`;
+    c.fillText(val,W-P-36-c.measureText(val).width,y+80);
+  };
+  box(gy+2*rowH+50,"DAILY TARGET",bhd(S.daily),camel,camelSoft,camel);
+  box(gy+2*rowH+200,"MTD UPT",S.upt.toFixed(2),"rgba(255,255,255,0.3)",dim,white);
+  // footer
+  c.fillStyle="rgba(255,255,255,0.45)";c.font=`400 20px ${F}`;spaced(c,"MONTHLY KPI CARD",W/2,H-56,12,"center");
+  return cv;
+}
+
+$("save").addEventListener("click",async()=>{
+  render();
+  try{await document.fonts.ready}catch(e){}
+  const cv=drawCard();
+  const blob=await new Promise(r=>cv.toBlob(r,"image/png"));
+  const fname=`KPI-${(S.name||"staff").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-")}-${S.ds}.png`;
+  const showPreview=()=>{const img=$("preview");img.src=cv.toDataURL("image/png");img.hidden=false;
+    $("msg").textContent="Press and hold the image below to save or share it."};
+  let dl=null;try{dl=await window.claude?.use?.("downloads")}catch(e){}
+  if(dl){
+    try{await dl.save({filename:fname,data:blob});$("msg").textContent="Card saved as "+fname+".";return}
+    catch(e){if(e&&e.code==="declined"){$("msg").textContent="Save cancelled.";return}}
+  }
+  // Phones: open the share sheet (WhatsApp, Photos, etc.)
+  try{
+    const file=new File([blob],fname,{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:"KPI Card"});
+      $("msg").textContent="Card shared.";return;
+    }
+  }catch(e){if(e&&e.name==="AbortError"){$("msg").textContent="Share cancelled.";return}}
+  // Desktop browsers: download the PNG
+  try{
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fname;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }catch(e){}
+  showPreview();
+});
+render();
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}</script>
+</body>
+</html>
